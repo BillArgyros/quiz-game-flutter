@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:quiz_game/screens/home_screen.dart';
-import 'package:quiz_game/services.dart';
 
 Future<void> main() async {
    WidgetsFlutterBinding.ensureInitialized();
@@ -17,12 +16,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    return  ChangeNotifierProvider(
-      create: (context) => GoogleSignInProvider(),
-      child: const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Home(),
-      ),
+    return  const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Home(),
     );
   }
 }

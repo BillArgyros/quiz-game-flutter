@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
-import '../services.dart';
+import 'package:quiz_game/screens/questions_screen.dart';
+import 'package:quiz_game/services/json_services.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -15,102 +12,96 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  ReadJsonFiles readJsonFiles = ReadJsonFiles();
+  List categories = [];
 
-  // Future<void> readJson() async {
-  //   final String response = await rootBundle.loadString('assets/science_questions.json');
-  //   final data = await json.decode(response);
-  //   print(data['category'][0]);
-  // }
+  @override
+  void initState() {
+    readJsonFiles.readCategories().then((value) {
+      setState(() {
+        categories.addAll(value);
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
     var screenHeight = MediaQuery.of(context).size.height;
-    //final provider = Provider.of<GoogleSignInProvider>(context);
     return MaterialApp(
+      initialRoute: '/',
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-          body: SizedBox(
-        width: screenWidth * 1,
-        height: screenHeight * 1,
-      )),
-    );
-  }
-
-  Widget googleSignInButton(screenWidth, screenHeight) {
-    return StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else {
-            if (snapshot.hasData) {
-              return Align(
-                alignment: Alignment.topRight,
-                child: SizedBox(
-                  width: screenWidth * 0.3,
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      elevation: MaterialStateProperty.all(0),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.transparent),
-                    ),
-                    onPressed: () {
-                      // provider.logOut();
-                    },
-                    child: SizedBox(
-                      width: screenWidth * 0.3,
-                      height: screenHeight * 0.025,
-                      child: const FittedBox(
-                        child: Text('Sign out',
-                            style: TextStyle(color: Colors.black)),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              return Stack(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
+        body: categories.isNotEmpty
+            ? Stack(
                 children: [
                   Align(
-                    alignment: Alignment.center,
+                    alignment: Alignment.topLeft,
                     child: Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
+                      padding: const EdgeInsets.only(left: 30.0, top: 30),
                       child: SizedBox(
-                        height: screenHeight * 0.055,
-                        child: FittedBox(
-                          child: ElevatedButton.icon(
-                            style: ButtonStyle(
-                                elevation: MaterialStateProperty.all(5),
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.blue.shade400.withOpacity(1)),
-                                shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(32),
-                                ))),
-                            onPressed: () {
-                              //  provider.googleLogin();
-                            },
-                            label: const Text(
-                              'Sign in with Google',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            icon: const FaIcon(
-                              FontAwesomeIcons.google,
-                              size: 20,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ),
-                      ),
+                          width: screenWidth * 0.4,
+                          height: screenHeight * 0.2,
+                          child: const FittedBox(child: Text("Let's Play!"))),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      child: getCategories(screenWidth, screenHeight),
                     ),
                   ),
                 ],
-              );
-            }
-          }
-        });
+              )
+            : const Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+
+  getCategories(double screenWidth, double screenHeight) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: categories
+          .map<Widget>(
+              (element) => categoryButton(screenWidth, screenHeight, element))
+          .toList(),
+    );
+  }
+
+  categoryButton(double screenWidth, double screenHeight, element) {
+    return SizedBox(
+      width: screenWidth * 0.9,
+      height: screenHeight * 0.06,
+      child: ElevatedButton(
+        style: ButtonStyle(
+            elevation: MaterialStateProperty.all(5),
+            backgroundColor: MaterialStateProperty.all<Color>(
+              Colors.white,
+            ),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(32),
+                    side: const BorderSide(
+                        color: Color.fromRGBO(84, 90, 117, 1), width: 1)))),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Questions(element)),
+          );
+        },
+        child: SizedBox(
+            width: screenWidth * 0.4,
+            height: screenHeight * 0.03,
+            child: FittedBox(
+                child: Text(
+              element.title,
+              style: const TextStyle(color: Colors.black),
+            ))),
+      ),
+    );
   }
 }
