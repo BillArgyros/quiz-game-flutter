@@ -3,7 +3,9 @@ This project is an early version of a quiz game that is built using Flutter. The
 
 ## Getting Started
 
-The link below contains the apk of a beta version of the application. Currently the application can be run on Android devices.
+
+## How to use
+
 
 ![280723295_743592406668368_1586971674296508524_n](https://user-images.githubusercontent.com/99279342/168769137-e62bcb04-c127-4924-bb9d-220299ec6835.jpg)
 ![280371379_7780995885275263_798568560842537478_n](https://user-images.githubusercontent.com/99279342/168769208-a2b3edf8-3238-4a54-908a-80b264309f1c.jpg)
